@@ -1,0 +1,71 @@
+SCSFExport scsf_DTC_Scalper_Text_Only(SCStudyInterfaceRef sc)
+{
+	int i = sc.Index;
+
+	SCSubgraphRef Subgraph_Winner = sc.Subgraph[0];
+	SCSubgraphRef Subgraph_VolCurr = sc.Subgraph[1];
+	SCSubgraphRef Subgraph_VolPrev = sc.Subgraph[2];
+
+
+	if (sc.SetDefaults)
+	{
+		sc.GraphName = "DTC Scalper Text Only";
+		sc.GraphRegion = 1;
+		sc.AutoLoop = 1;
+
+		return;
+	}
+
+	Subgraph_Winner.Name = "Green or Red Dominant";
+	Subgraph_Winner.DrawStyle = DRAWSTYLE_CUSTOM_TEXT;
+	Subgraph_Winner.PrimaryColor = RGB(255, 255,255);
+	Subgraph_Winner.SecondaryColorUsed = true;
+	Subgraph_Winner.SecondaryColor = RGB(0, 167, 0);
+	Subgraph_Winner.LineWidth = 12;
+	Subgraph_Winner.DrawZeros = false;
+
+	Subgraph_VolCurr.Name = "Volume Current";
+	Subgraph_VolCurr.DrawStyle = DRAWSTYLE_CUSTOM_TEXT;
+	Subgraph_VolCurr.PrimaryColor = RGB(0, 0, 0);
+	Subgraph_VolCurr.SecondaryColorUsed = true;
+	Subgraph_VolCurr.SecondaryColor = RGB(255, 255, 255);
+	Subgraph_VolCurr.LineWidth = 12;
+	Subgraph_VolCurr.DrawZeros = false;
+
+	Subgraph_VolPrev.Name = "Volume Previous";
+	Subgraph_VolPrev.DrawStyle = DRAWSTYLE_CUSTOM_TEXT;
+	Subgraph_VolPrev.PrimaryColor = RGB(0, 0, 0);
+	Subgraph_VolPrev.SecondaryColorUsed = true;
+	Subgraph_VolPrev.SecondaryColor = RGB(255, 255, 255);
+	Subgraph_VolPrev.LineWidth = 12;
+	Subgraph_VolPrev.DrawZeros = false;
+
+
+	double green = sc.Volume[sc.Index] * (sc.Close[sc.Index] - sc.Low[sc.Index]) / (sc.High[sc.Index] - sc.Low[sc.Index]);
+	double red = sc.Volume[sc.Index] * (sc.High[sc.Index] - sc.Close[sc.Index]) / (sc.High[sc.Index] - sc.Low[sc.Index]);
+
+
+	//sc.p_GDIFunction = DrawToChart;
+	SCString t;
+
+	//t.Format("Vol: %0.0f", sc.Volume[i]);
+	//sc.AddAndManageSingleTextUserDrawnDrawingForStudy(sc, true, 60, 90, Subgraph_VolCurr, false, t, true, 1);
+
+	//u.Format("Prev: %0.0f", sc.Volume[i-1]);
+	//sc.AddAndManageSingleTextUserDrawnDrawingForStudy(sc, true, 75, 90, Subgraph_VolPrev, false, t, true, 1);
+
+	if (green > red)
+	{
+		Subgraph_Winner.SecondaryColor = RGB(0, 200, 0);
+		t.Format("Prev: %0.0f     Vol: %0.0f     Buyers %0.0f %%", sc.Volume[i - 1], sc.Volume[i], (green / sc.Volume[i]) * 100);
+		sc.AddAndManageSingleTextUserDrawnDrawingForStudy(sc, true, 90, 90, Subgraph_Winner, false, t, true, 1);
+	}
+	else
+	{
+		Subgraph_Winner.SecondaryColor = RGB(200, 0, 0);
+		t.Format("Prev: %0.0f     Vol: %0.0f     Sellers %0.0f %%", sc.Volume[i-1], sc.Volume[i], (red / sc.Volume[i]) * 100);
+		sc.AddAndManageSingleTextUserDrawnDrawingForStudy(sc, true, 90, 90, Subgraph_Winner, false, t, true, 1);
+	}
+
+
+}
